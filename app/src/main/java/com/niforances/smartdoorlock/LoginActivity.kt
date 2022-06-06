@@ -1,10 +1,13 @@
 package com.niforances.smartdoorlock
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -13,6 +16,9 @@ import com.google.firebase.ktx.Firebase
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    lateinit var edtId: TextInputEditText;
+    lateinit var edtPwd: TextInputEditText;
+    lateinit var btnLogin: Button;
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,11 +27,21 @@ class LoginActivity : AppCompatActivity() {
 
         auth = Firebase.auth
 
+        edtId = findViewById(R.id.edtAccount)
+        edtPwd = findViewById(R.id.edtPwd)
+        btnLogin = findViewById(R.id.textButton)
+
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            reload()
+
+            Log.i("log_activity_login","login Complete, userName: ${currentUser.email}")
+            moveToMain()
         }
 
+        //로그인 해야 함
+        btnLogin.setOnClickListener {
+            signIn(edtId.text.toString(), edtPwd.text.toString())
+        }
 
     }
 
@@ -35,12 +51,12 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "createUserWithEmail:success")
+                    Log.i(TAG, "createUserWithEmail:success")
                     val user = auth.currentUser
                     updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                    Log.i(TAG, "createUserWithEmail:failure", task.exception)
                     Toast.makeText(
                         baseContext, "Authentication failed.",
                         Toast.LENGTH_SHORT
@@ -55,12 +71,12 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithEmail:success")
+                    Log.i("log_activity_login", "signInWithEmail:success")
                     val user = auth.currentUser
                     updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                    Log.i("log_activity_login", "signInWithEmail:failure", task.exception)
                     Toast.makeText(
                         baseContext, "Authentication failed.",
                         Toast.LENGTH_SHORT
@@ -72,11 +88,14 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun updateUI(user: FirebaseUser?) {
-
+        moveToMain()
     }
 
-    private fun reload() {
+    private fun moveToMain() {
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        startActivity(intent)
 
+        finish()
     }
 
     companion object {
