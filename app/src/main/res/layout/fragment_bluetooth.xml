@@ -5,26 +5,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="블루투스 감도 테스트"
+        android:textColor="#ffffff"
+        android:textSize="24sp"
+        android:layout_margin="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ToggleButton
         android:id="@+id/ble_on_off_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:text="Bluetooth ON/OFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
     <Button
         android:id="@+id/scanBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:text="scan"
         android:visibility="invisible"
         app:layout_constraintStart_toEndOf="@+id/ble_on_off_btn"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/ble_on_off_btn" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

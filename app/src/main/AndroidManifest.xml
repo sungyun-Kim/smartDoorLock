@@ -25,16 +25,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartDoorLock">
         <activity
-            android:name=".DeviceActivity"
+            android:name=".LoginActivity"
             android:exported="true" />
         <activity
-            android:name=".DeviceScanActivity"
-            android:exported="true" />
-        <activity
-            android:name=".PermissionsActivity"
-            android:exported="true" />
-        <activity
-            android:name=".MainActivity"
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,6 +36,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".DeviceActivity"
+            android:exported="true" />
+        <activity
+            android:name=".PermissionsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"></activity>
     </application>
 
 </manifest>

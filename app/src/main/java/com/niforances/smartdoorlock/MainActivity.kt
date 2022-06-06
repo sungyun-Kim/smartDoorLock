@@ -13,6 +13,10 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.google.android.material.navigation.NavigationBarView
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.niforances.smartdoorlock.databinding.ActivityMainBinding
 import com.niforances.smartdoorlock.fragment.BluetoothFragment
 import com.niforances.smartdoorlock.fragment.MainFragment
@@ -24,41 +28,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     lateinit var fragmentManager: FragmentManager
 
-    //1. BluetoothAdapter 를 가져온다
-    private val bluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        bluetoothManager.adapter
-    }
-
-    // isDisabled 임의 정의
-    private val BluetoothAdapter.isDisabled: Boolean
-        get() = !isEnabled
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //takeIf 문법 : 노션에 정리, 앞의 객체 널체크와 동시에 그 결과에 따른 구문 처리에 용이함
-
-        //아래 구문은 takeIf 절에서
-        bluetoothAdapter?.takeIf { it.isDisabled }?.apply {
-            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-
-            if (ActivityCompat.checkSelfPermission(
-                    applicationContext,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                startActivityForResult(enableBtIntent, 1)
-            }
-        }
-
         fragmentManager = supportFragmentManager
-
-        fragmentManager.commit {
-            setReorderingAllowed(true)
-            add(R.id.fcvMain, MainFragment())
-        }
+        checkCurrentUser()
 
         //뷰바인딩 초기세팅
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -79,12 +54,29 @@ class MainActivity : AppCompatActivity() {
                     replace(R.id.fcvMain, BluetoothFragment())
                 }
             }
-
             true // return true;
         }
-
-
     }
 
+    private fun checkCurrentUser() {
 
+        FirebaseApp.initializeApp(this)
+
+        val user = Firebase.auth.currentUser
+        if (user != null) {
+            // User is signed in
+            initFragment()
+        } else {
+            // No user is signed in
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+    }
+
+    private fun initFragment() {
+        fragmentManager.commit {
+            setReorderingAllowed(true)
+            add(R.id.fcvMain, MainFragment())
+        }
+    }
 }
