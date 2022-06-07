@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.niforances.smartdoorlock.R
 
@@ -28,6 +29,9 @@ class MainFragment(private val user: FirebaseUser) : Fragment() {
         val tvAccount = view.findViewById<TextView>(R.id.tvAccount)
         Log.i("log_Fragment_Main", "id: ${user.email.toString()}")
         tvAccount.text = "hello ${user.email.toString()}"
+
+        val db = Firebase.firestore
+        
 
         return view
     }

@@ -28,9 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mainFragment: Fragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         checkCurrentUser()
-        supportFragmentManager.fragmentFactory = MainFragmentFactory(user)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -39,7 +37,7 @@ class MainActivity : AppCompatActivity() {
             MainFragment::class.java.name
         )
 
-        fragmentManager = supportFragmentManager
+        initFragment()
 
         //뷰바인딩 초기세팅
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -51,11 +49,11 @@ class MainActivity : AppCompatActivity() {
 
             //fragment transaction
             when (item.itemId) {
-                R.id.page_main -> fragmentManager.commit {
+                R.id.page_main -> supportFragmentManager.commit {
                     setReorderingAllowed(true)
                     replace(R.id.fcvMain, mainFragment)
                 }
-                R.id.page_bluetooth -> fragmentManager.commit {
+                R.id.page_bluetooth -> supportFragmentManager.commit {
                     setReorderingAllowed(true)
                     replace(R.id.fcvMain, BluetoothFragment())
                 }
@@ -72,14 +70,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         } else {
+            supportFragmentManager.fragmentFactory = MainFragmentFactory(user!!)
             Log.i("log_activity_main", "user: ${user!!.email}")
         }
     }
 
     private fun initFragment() {
-        fragmentManager.commit {
+        supportFragmentManager.commit {
             setReorderingAllowed(true)
             add(R.id.fcvMain, mainFragment)
         }
+
     }
 }
