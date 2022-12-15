@@ -68,6 +68,7 @@
             android:id="@+id/edtPwd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPassword"
             app:layout_constraintTop_toBottomOf="@+id/textView5"
             tools:layout_editor_absoluteX="2dp" />
 
@@ -90,6 +91,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/outlinedTextField2" />
+
+    <Button
+        android:id="@+id/btnResetPwd"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:text="비밀번호 재설정"
+        app:layout_constraintEnd_toEndOf="@+id/textButton"
+        app:layout_constraintStart_toStartOf="@+id/textButton"
+        app:layout_constraintTop_toBottomOf="@+id/textButton" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

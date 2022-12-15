@@ -19,6 +19,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var edtId: TextInputEditText;
     lateinit var edtPwd: TextInputEditText;
     lateinit var btnLogin: Button;
+    lateinit var btnResetPwd: Button;
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
         edtId = findViewById(R.id.edtAccount)
         edtPwd = findViewById(R.id.edtPwd)
         btnLogin = findViewById(R.id.textButton)
+        btnResetPwd = findViewById(R.id.btnResetPwd)
 
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -41,6 +43,11 @@ class LoginActivity : AppCompatActivity() {
         //로그인 해야 함
         btnLogin.setOnClickListener {
             signIn(edtId.text.toString(), edtPwd.text.toString())
+        }
+
+        btnResetPwd.setOnClickListener {
+            val intent = Intent(applicationContext, PasswordResetActivity::class.java)
+            startActivity(intent)
         }
 
     }
@@ -78,10 +85,13 @@ class LoginActivity : AppCompatActivity() {
                     // If sign in fails, display a message to the user.
                     Log.i("log_activity_login", "signInWithEmail:failure", task.exception)
                     Toast.makeText(
-                        baseContext, "Authentication failed.",
+                        baseContext, "아이디가 존재하지 않거나 비밀번호가 일치하지 않습니다.",
                         Toast.LENGTH_SHORT
                     ).show()
-                    updateUI(null)
+
+                    edtPwd.setText("")
+
+                    //updateUI(null)
                 }
             }
         // [END sign_in_with_email]
