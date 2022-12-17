@@ -2,6 +2,7 @@ package com.niforances.smartdoorlock.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanCallback
@@ -19,6 +20,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
@@ -93,7 +95,6 @@ class BluetoothFragment : Fragment() {
         bluetoothAdapter?.bluetoothLeScanner?.stopScan(mLeScanCallback)
     }
 
-    @SuppressLint("MissingPermission")
     fun bluetoothOnOff() {
         if (bluetoothAdapter == null) {
             // Device doesn't support Bluetooth
@@ -103,6 +104,22 @@ class BluetoothFragment : Fragment() {
                 val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
             } else { // 블루투스 켜져있으면 블루투스 비활성화
+                if (activity?.let {
+                        ActivityCompat.checkSelfPermission(
+                            it.applicationContext,
+                            Manifest.permission.BLUETOOTH_CONNECT
+                        )
+                    } != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return
+                }
                 bluetoothAdapter?.disable()
             }
         }
@@ -149,23 +166,56 @@ class BluetoothFragment : Fragment() {
             }
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestMultiplePermissions.launch(
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                )
+            )
+        } else {
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            requestBluetooth.launch(enableBtIntent)
+        }
+
         bleOnOffBtn.setOnCheckedChangeListener { _, isChecked ->
-            bluetoothOnOff()
-            scanBtn.visibility = if (scanBtn.visibility == View.VISIBLE) {
-                View.INVISIBLE
+            if (!hasPermissions(activity?.applicationContext, PERMISSIONS)) {
+                requestPermissions(PERMISSIONS, REQUEST_ALL_PERMISSION)
             } else {
-                View.VISIBLE
+                bluetoothOnOff()
+                scanBtn.visibility = if (scanBtn.visibility == View.VISIBLE) {
+                    View.INVISIBLE
+                } else {
+                    View.VISIBLE
+                }
             }
         }
 
         scanBtn.setOnClickListener { v: View? -> // Scan Button Onclick
             if (!hasPermissions(activity?.applicationContext, PERMISSIONS)) {
                 requestPermissions(PERMISSIONS, REQUEST_ALL_PERMISSION)
+            } else {
+                scanDevice(true)
+                scanBtn.text = "scanning..."
             }
-            scanDevice(true)
-            scanBtn.text = "scanning..."
         }
 
         return initView
     }
+
+    private var requestBluetooth =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                //granted
+            } else {
+                //deny
+            }
+        }
+
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                Log.d("test006", "${it.key} = ${it.value}")
+            }
+        }
 }
